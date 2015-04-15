@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBI", "NBI-lib\NBI-lib.csproj", "{680E7D4F-C370-4A0D-9307-6916946E6399}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{7237D5B3-C67C-48EB-AB99-F51BF0DCB227}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{680E7D4F-C370-4A0D-9307-6916946E6399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{680E7D4F-C370-4A0D-9307-6916946E6399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{680E7D4F-C370-4A0D-9307-6916946E6399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{680E7D4F-C370-4A0D-9307-6916946E6399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7237D5B3-C67C-48EB-AB99-F51BF0DCB227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7237D5B3-C67C-48EB-AB99-F51BF0DCB227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7237D5B3-C67C-48EB-AB99-F51BF0DCB227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7237D5B3-C67C-48EB-AB99-F51BF0DCB227}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
