@@ -97,8 +97,8 @@ namespace TSDFF.IO
             List<byte> DataBuffer = new List<byte>();
             FileStream writer = new FileStream(path, FileMode.Create);
 
-            //   try
-            //   {
+               try
+               {
             for (int i = 0; i < Datas.Length; i++)
             {
                 byte[] TempBuffer = Data.BuildData(Datas[i]);
@@ -117,10 +117,10 @@ namespace TSDFF.IO
             writer.Dispose(); writer.Close();
         }
 
-        //  catch (Exception e)
-        //  {
-        //      throw new NBIIOExeption("[FATAL] Failled to Export a file + (" + e.Message + ", " + e.Data + ")");
-        //  }
+          catch (Exception e)
+          {
+              throw new NBIIOExeption("[FATAL] Failled to Export a file + (" + e.Message + ", " + e.Data + ")");
+          }
     }
     /// <summary>
     /// This exception has is thrown when an I/O error occurs.
