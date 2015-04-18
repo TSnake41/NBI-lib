@@ -22,23 +22,23 @@ namespace TSDFF.IO
             FileInfo info = new FileInfo(path);
             FileExt Ext;
 
-         /*   switch (info.Extension) // Check and set the extention of the file.
-            {
-                case "nbi":
-                    Ext = FileExt.DataFile;
-                    break;
-                case "nbir":
-                    Ext = FileExt.RawFile;
-                    break;
-                case "nbc":
-                    Ext = FileExt.Chunk;
-                    break;
-                case "nbr":
-                    Ext = FileExt.ChunkRoot;
-                    break;
-                default:
-                    throw new InvalidOperationException("[ERROR] Invalid format.");
-            }*/
+            /*   switch (info.Extension) // Check and set the extention of the file.
+               {
+                   case "nbi":
+                       Ext = FileExt.DataFile;
+                       break;
+                   case "nbir":
+                       Ext = FileExt.RawFile;
+                       break;
+                   case "nbc":
+                       Ext = FileExt.Chunk;
+                       break;
+                   case "nbr":
+                       Ext = FileExt.ChunkRoot;
+                       break;
+                   default:
+                       throw new InvalidOperationException("[ERROR] Invalid format.");
+               }*/
             Ext = FileExt.DataFile;
             switch (Ext)
             {
@@ -97,55 +97,53 @@ namespace TSDFF.IO
             List<byte> DataBuffer = new List<byte>();
             FileStream writer = new FileStream(path, FileMode.Create);
 
-            try
+            //   try
+            //   {
+            for (int i = 0; i < Datas.Length; i++)
             {
-                for (int i = 0; i < Datas.Length; i++)
+                byte[] TempBuffer = Data.BuildData(Datas[i]);
+                for (int i2 = 0; i2 < TempBuffer.Length; i2++)
                 {
-                    byte[] TempBuffer = Data.BuildData(Datas[i]);
-                    for (int i2 = 0; i2 < TempBuffer.Length; i2++)
-                    {
-                        DataBuffer.Add(TempBuffer[i2]);
-                    }
-                    DataBuffer.Add(Data.Separator);
+                    DataBuffer.Add(TempBuffer[i2]);
                 }
-                // Starting writing file.
-                writer.WriteByte(Signature); // Write the signature at the 1st byte.
-                for (int i = 0; i < DataBuffer.Count; i++)
-                {
-                    writer.WriteByte(DataBuffer[i]); // Then write the file.
-                }
-                writer.Dispose(); writer.Close();
+                DataBuffer.Add(Data.Separator);
             }
-
-            catch (Exception e)
+            // Starting writing file.
+            writer.WriteByte(Signature); // Write the signature at the 1st byte.
+            for (int i = 0; i < DataBuffer.Count; i++)
             {
-                throw new NBIIOExeption("[FATAL] Failled to Export a file + (" + e.Message + ", " + e.Data + ")");
-
+                writer.WriteByte(DataBuffer[i]); // Then write the file.
             }
+            writer.Dispose(); writer.Close();
         }
-        /// <summary>
-        /// This exception has is thrown when an I/O error occurs.
-        /// </summary>
-        [Serializable]
-        public class NBIIOExeption : Exception
-        {
-            public NBIIOExeption() { }
-            public NBIIOExeption(string message) : base(message) { }
-            public NBIIOExeption(string message, Exception inner) : base(message, inner) { }
-            protected NBIIOExeption(
-              System.Runtime.Serialization.SerializationInfo info,
-              System.Runtime.Serialization.StreamingContext context)
-                : base(info, context) { }
-        }
-        /// <summary>
-        /// Possibles extentions.
-        /// </summary>
-        public enum FileExt
-        {
-            DataFile,
-            RawFile,
-            Chunk,
-            ChunkRoot
-        }
+
+        //  catch (Exception e)
+        //  {
+        //      throw new NBIIOExeption("[FATAL] Failled to Export a file + (" + e.Message + ", " + e.Data + ")");
+        //  }
+    }
+    /// <summary>
+    /// This exception has is thrown when an I/O error occurs.
+    /// </summary>
+    [Serializable]
+    public class NBIIOExeption : Exception
+    {
+        public NBIIOExeption() { }
+        public NBIIOExeption(string message) : base(message) { }
+        public NBIIOExeption(string message, Exception inner) : base(message, inner) { }
+        protected NBIIOExeption(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+    /// <summary>
+    /// Possibles extentions.
+    /// </summary>
+    public enum FileExt
+    {
+        DataFile,
+        RawFile,
+        Chunk,
+        ChunkRoot
     }
 }

@@ -43,36 +43,36 @@ namespace TSDFF
         /// <summary>
         /// To get the value of a byte array.
         /// </summary>
-        public static object GetValue(byte[] number, TypesList type) // TODO: finish this
+        public static object GetValue(byte[] value, TypesList type) // TODO: finish this
         {
             try
             {
                 switch (type)
                 {
                     case TypesList.Bool:
-                        return BitConverter.ToBoolean(number, 0);
+                        return BitConverter.ToBoolean(value, 0);
                     case TypesList.Byte:
-                        return number[0];
+                        return value[0];
                     case TypesList.Short:
-                        return BitConverter.ToInt16(number, 0);
+                        return BitConverter.ToInt16(value, 0);
                     case TypesList.Int:
-                        return BitConverter.ToInt32(number, 0);
+                        return BitConverter.ToInt32(value, 0);
                     case TypesList.Long:
-                        return BitConverter.ToInt64(number, 0);
+                        return BitConverter.ToInt64(value, 0);
                     case TypesList.Float:
-                        return BitConverter.ToSingle(number, 0);
+                        return BitConverter.ToSingle(value, 0);
                     case TypesList.Double:
-                        return BitConverter.ToDouble(number, 0);
+                        return BitConverter.ToDouble(value, 0);
                     case TypesList.Char:
-                        return BitConverter.ToChar(number, 0);
+                        return BitConverter.ToChar(value, 0);
+                    case TypesList.String:
+                        return BitConverter.ToString(value, 0);
                     /*   
                      * case TypesList.FloatA:
                            return null;
                        case TypesList.DoubleA:
                            return null;
-                     */
-                    case TypesList.String:
-                        return null;
+                    */
                     default:
                         throw new InvalidOperationException("Invalid or unsupported conversion.");
                 }
@@ -99,8 +99,8 @@ namespace TSDFF
     }
     public enum TypesList
     {
-        Bool = 1, Byte = 2, Short = 3, Int=4, Long=5, Float=6, Double=7, Char=8,
-        BoolA=9, ByteA=10, ShortA=11, IntA=12, LongA=13, CharA=14, /*FloatA, DoubleA,*/ String=15
+        Bool = 1, Byte = 2, Short = 3, Int = 4, Long = 5, Float = 6, Double = 7, Char = 8,
+        BoolA = 9, ByteA = 10, ShortA = 11, IntA = 12, LongA = 13, CharA = 14, /*FloatA, DoubleA,*/ String = 15
         //    Sbyte, uShort, uInt, uLong
     }
 }

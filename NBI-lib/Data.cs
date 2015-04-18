@@ -16,9 +16,9 @@ namespace TSDFF
     /// </summary>
     public class Data
     {
-        TypesList Format;
-        object Value;
-        string Name;
+       public TypesList Format;
+       public object Value;
+       public string Name;
 
         public const byte Separator = 254;
         public const byte DataHead = 14; // Separate the Header (Name) and the Data.
@@ -38,10 +38,10 @@ namespace TSDFF
         public static Data Translate(byte[] UncompressedDataArray)
         {
             TypesList arrayformat = (TypesList)UncompressedDataArray[0]; // Get the TypesList with the 1st number.
-            int CurretByte = 0;
+            int CurretByte = 1;
             string Header = "";
             object value = new object();
-
+           
             while (true) // Read and Set the name of the Data.
             {
                 if (UncompressedDataArray[CurretByte] == 14)
@@ -55,6 +55,7 @@ namespace TSDFF
                 }
                 CurretByte++;
             }
+            
             List<byte> templist = new List<byte>(8);
 
             List<byte> listbyte = new List<byte>();
@@ -68,7 +69,7 @@ namespace TSDFF
                 {
                     case TypesList.Byte:
                         value = BinaryConverterTool.GetValue(new byte[1] { UncompressedDataArray[CurretByte] }, TypesList.Byte);
-                        throw null;
+                        break; 
                     case TypesList.Short:
                         templist.Add(UncompressedDataArray[CurretByte]);
                         break;
@@ -94,10 +95,10 @@ namespace TSDFF
                         listbyte.Add(UncompressedDataArray[CurretByte]);
                         break;
                     case TypesList.ShortA:
-                        if(templist.Count >= 2)
+                        if(templist.Count >= 1)
                         {
                             templist.Clear();
-                            listshort.Add((short)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.ShortA));
+                            listshort.Add((short)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Short));
                         }
                         else
                         {
@@ -105,10 +106,10 @@ namespace TSDFF
                         }
                         break;
                     case TypesList.IntA:
-                        if (templist.Count >= 4)
+                        if (templist.Count >= 3)
                         {
                             templist.Clear();
-                            listshort.Add((short)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.ShortA));
+                            listint.Add((int)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Int));
                         }
                         else
                         {
@@ -116,10 +117,10 @@ namespace TSDFF
                         }
                         break;
                     case TypesList.LongA:
-                        if (templist.Count >= 8)
+                        if (templist.Count >= 7)
                         {
                             templist.Clear();
-                            listshort.Add((short)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.ShortA));
+                            listlong.Add((int)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Long));
                         }
                         else
                         {
@@ -146,54 +147,37 @@ namespace TSDFF
             switch (arrayformat)
             {
                 case TypesList.Short:
-                    value = (short)value;
                     value = BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Short);
                     break;
                 case TypesList.Int:
-                    value = (int)value;
                     value = BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Int);
                     break;
                 case TypesList.Long:
-                    value = (long)value;
                     value = BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Long);
                     break;
                 case TypesList.Float:
-                    value = (float)value;
                     value = BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Int);
                     break;
                 case TypesList.Double:
-                    value = (double)value;
                     value = BinaryConverterTool.GetValue(templist.ToArray(), TypesList.Long);
                     break;
                 case TypesList.String:
-                    value = ((string)value) as string;
                     value = (string)BinaryConverterTool.GetValue(templist.ToArray(), TypesList.String);
                     break;
-                case TypesList.Char:
-                    value = (char)value;
-                    break;
                 case TypesList.ByteA:
-                    value = ((byte[])value) as byte[];
                     value = listbyte.ToArray();
                     break;
                 case TypesList.ShortA:
-                    value = ((short[])value) as short[];
                     value = listshort.ToArray();
                     break;
                 case TypesList.IntA: 
-                    value = ((int[])value) as int[];
                     value = listint.ToArray();
                     break;
                 case TypesList.LongA:
-                    value = ((long[])value) as long[];
                     value = listlong.ToArray();
                     break;
                 case TypesList.CharA:
-                    value = ((char[])value) as char[];
                     char[] _charvalue = (value as string).ToCharArray();
-                    break;
-                case TypesList.Bool:
-                    value = (bool)value;
                     break;
                 default:
                     break;
@@ -209,19 +193,17 @@ namespace TSDFF
         /// <returns></returns>
         public static byte[] BuildData(Data data)
         {
-            //        byte[] ByteBuffer = new byte[64000];
             List<byte> ByteBuffer = new List<byte>();
 
             string name = data.Name;
             TypesList format = data.Format;
             object value = data.Value;
 
+            ByteBuffer.Add((byte)format); // Add the format.
             for (int i = 0; i < name.Length; i++)
             {
                 ByteBuffer.Add((byte)name[i]);
             } // Set the name
-
-            ByteBuffer.Add((byte)format); // Add the format.
             ByteBuffer.Add((byte)DataHead); // Add the head.
             switch (format)
             {
@@ -268,7 +250,7 @@ namespace TSDFF
                         ByteBuffer.Add((byte)_ByteA[i]);
                     }
                     break;
-                 case TypesList.ShortA:
+                case TypesList.ShortA:
                     short[] shorta = value as short[];
                     for (int i = 0; i < shorta.Length; i++)
                     {
@@ -291,7 +273,7 @@ namespace TSDFF
                     }
                     break;
                 case TypesList.LongA:
-                     int[] longa = value as int[];
+                     long[] longa = value as long[];
                     for (int i = 0; i < longa.Length; i++)
                     {
                         byte[] longa2 = BinaryConverterTool.ConvertToByte((int)Convert.ChangeType(longa[i], typeof(int)));
@@ -300,6 +282,7 @@ namespace TSDFF
                             ByteBuffer.Add(longa2[i2]);
                         }
                     }
+                    break;
                 case TypesList.CharA:
                     char[] _charA = value as char[];
                     for (int i = 0; i < _charA.Length; i++)
@@ -323,7 +306,6 @@ namespace TSDFF
                     break;
                 default:
                     throw new NotImplementedException();
-                    break;
             }
             return (ByteBuffer.ToArray());
         }
