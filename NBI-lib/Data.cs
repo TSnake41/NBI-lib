@@ -268,12 +268,38 @@ namespace TSDFF
                         ByteBuffer.Add((byte)_ByteA[i]);
                     }
                     break;
-                case TypesList.ShortA:
-                    throw new NotImplementedException();
+                 case TypesList.ShortA:
+                    short[] shorta = value as short[];
+                    for (int i = 0; i < shorta.Length; i++)
+                    {
+                        byte[] shorta2 = BinaryConverterTool.ConvertToByte((short)Convert.ChangeType(shorta[i], typeof(short)));
+                        for (int i2 = 0; i2 < 2; i2++)
+                        {
+                            ByteBuffer.Add(shorta2[i2]);
+                        }
+                    }
+                    break;
                 case TypesList.IntA:
-                    throw new NotImplementedException();
+                    int[] inta = value as int[];
+                    for (int i = 0; i < inta.Length; i++)
+                    {
+                        byte[] inta2 = BinaryConverterTool.ConvertToByte((int)Convert.ChangeType(inta[i], typeof(int)));
+                        for (int i2 = 0; i2 < 2; i2++)
+                        {
+                            ByteBuffer.Add(inta2[i2]);
+                        }
+                    }
+                    break;
                 case TypesList.LongA:
-                    throw new NotImplementedException();
+                     int[] longa = value as int[];
+                    for (int i = 0; i < longa.Length; i++)
+                    {
+                        byte[] longa2 = BinaryConverterTool.ConvertToByte((int)Convert.ChangeType(longa[i], typeof(int)));
+                        for (int i2 = 0; i2 < 2; i2++)
+                        {
+                            ByteBuffer.Add(longa2[i2]);
+                        }
+                    }
                 case TypesList.CharA:
                     char[] _charA = value as char[];
                     for (int i = 0; i < _charA.Length; i++)
