@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections;
 /*
@@ -51,7 +51,7 @@ namespace TSDFF
                 }
                 else
                 {
-                    Header += UncompressedDataArray[CurretByte];
+                    Header += (char)UncompressedDataArray[CurretByte];
                 }
                 CurretByte++;
             }
