@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TSDFF
 {
-    public abstract class BinaryConverterTool
+    /// <summary>
+    /// A lot of tools for convert bytes to data and vice versa.
+    /// </summary>
+    /// <see cref="Data.cs"/>
+    public static class BinaryConverterTool
     {
         /// <summary>
-        /// Permet de convertir une valeur pour obtenir un byte[] qui correspond a celui-ci.
+        /// To convert a value to get a byte [] that corresponds to.
         /// </summary>
-        /// <param name="value">Valeur a convertir. (valeurs supportées: bool, byte, short, int, long, float, double, char (UTF-8))</param>
+        /// <param name="value">Value a convert. (supported values: bool, byte, short, int, long, float, double, char, and all the other in TypeList)</param>
         public static byte[] ConvertToByte(object value)
         {
             if (value is bool)
@@ -40,7 +41,7 @@ namespace TSDFF
                 throw new InvalidOperationException("Format de valeur inconnu ou incompatible");
         }
         /// <summary>
-        /// Permet de récuperer la valeur d'un tableau de byte.
+        /// To get the value of a byte array.
         /// </summary>
         public static object GetValue(byte[] number, TypesList type) // TODO: finish this
         {
@@ -49,7 +50,7 @@ namespace TSDFF
                 switch (type)
                 {
                     case TypesList.Bool:
-                        return BitConverter.ToBoolean(number , 0);
+                        return BitConverter.ToBoolean(number, 0);
                     case TypesList.Byte:
                         return number[0];
                     case TypesList.Short:
@@ -64,45 +65,26 @@ namespace TSDFF
                         return BitConverter.ToDouble(number, 0);
                     case TypesList.Char:
                         return BitConverter.ToChar(number, 0);
-                    case TypesList.BoolA:
-                        return null;
-                    case TypesList.ByteA:
-                        return null;
-                    case TypesList.ShortA:
-                        return null;
-                    case TypesList.IntA:
-                        return null;
-                    case TypesList.LongA:
-                        return null;
-                    case TypesList.FloatA:
-                        return null;
-                    case TypesList.DoubleA:
-                        return null;
+                    /*   
+                     * case TypesList.FloatA:
+                           return null;
+                       case TypesList.DoubleA:
+                           return null;
+                     */
                     case TypesList.String:
                         return null;
-                    case TypesList.Sbyte:
-                        return (sbyte)(number[0] + 128);
-                    case TypesList.uShort:
-                        return BitConverter.ToUInt16(number, 0);
-                    case TypesList.uInt:
-                        return BitConverter.ToUInt32(number, 0);
-                    case TypesList.uLong:
-                        return BitConverter.ToUInt64(number, 0);
                     default:
-                        throw new BinaryConverterError("Une erreur est survenue lors de la conversion d'un tableau binaire en une valeur : (" + e.Data + ")");
+                        throw new InvalidOperationException("Invalid or unsupported conversion.");
                 }
             }
             catch (Exception e)
             {
-                throw new BinaryConverterError("Une erreur est survenue lors de la conversion d'un tableau binaire en une valeur : (" + e.Data + ")");
+                throw new BinaryConverterError("An error occurred when converting a bit array in a value : (" + e.Data + ")");
             }
         }
-        enum TypesList
-        {
-            Bool, Byte, Short, Int, Long, Float, Double, Char,
-            BoolA, ByteA, ShortA, IntA, LongA, FloatA, DoubleA, String,
-            Sbyte, uShort, uInt, uLong
-        }
+        /// <summary>
+        /// That exception was thrown when an conversion error occcurs.
+        /// </summary>
         [Serializable]
         public class BinaryConverterError : Exception
         {
@@ -115,5 +97,10 @@ namespace TSDFF
                 : base(info, context) { }
         }
     }
-
+    public enum TypesList
+    {
+        Bool = 1, Byte = 2, Short = 3, Int=4, Long=5, Float=6, Double=7, Char=8,
+        BoolA=9, ByteA=10, ShortA=11, IntA=12, LongA=13, CharA=14, /*FloatA, DoubleA,*/ String=15
+        //    Sbyte, uShort, uInt, uLong
+    }
 }

@@ -1,25 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace TSDFF.IO
 {
-    public class NBIIO
+    /// <summary>
+    /// Used for Input/Output interaction like Import and Export data files.
+    /// </summary>
+    /// <see cref="Data"/>
+    public static class NBIIO
     {
         const byte Signature = 1; // The curret signature.
-        byte[] ReadFile(string path)
-        {
-            return (File.ReadAllBytes(path));
-        }
+
         /// <summary>
-        /// Permet de lire un fichier et d'y récuperer ses données.
+        /// Allows to read a file and get its data.
         /// </summary>
-        /// <param name="path">Le format de fichier, peut être .NBI, .nbir, .chki ou .nbr</param>
-        public static Data[] ReadFile(string path)
+        /// <param name="path">The file format can be .NBI, .nbir, .chki ou .nbr</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static Data[] ImportFile(string path)
         {
             FileInfo info = new FileInfo(path);
             FileExt Ext;
 
-            switch (info.Extension) // Verifie et place l'extention du fichier.
+            switch (info.Extension) // Check and set the extention of the file.
             {
                 case "nbi":
                     Ext = FileExt.DataFile;
@@ -39,12 +42,13 @@ namespace TSDFF.IO
             switch (Ext)
             {
                 case FileExt.DataFile:
-                    return TranslateDataFile(File.ReadAllBytes(path), true); // Utilise TranslateDataFile avec la vérification de signature.
+                    return TranslateDataFile(File.ReadAllBytes(path), true); // Uses TranslateDataFile() with signature verification.
                 case FileExt.RawFile:
-                    return new Data[] { Data.Translate(File.ReadAllBytes(path)) }; // Traduit la seule donnée presente.
+                    return new Data[] { Data.Translate(File.ReadAllBytes(path)) }; // Translated the only present data.
                 case FileExt.Chunk:
-                    return TranslateDataFile(File.ReadAllBytes(path), false); // Utilise TranslateDataFile sans la vérification de signature.
+                    return TranslateDataFile(File.ReadAllBytes(path), false); // Uses TranslateDataFile() without signature verification
                 case FileExt.ChunkRoot:
+                    throw new NotImplementedException();
                 default:
                     throw new InvalidOperationException("[FATAL] Invalid or null format forcing.");
             }
@@ -54,15 +58,16 @@ namespace TSDFF.IO
 
 
         /// <summary>
-        /// Permet de Traduire un fichier de données en un Tableau de Données.
+        /// To translate a file of data into a data table.
         /// </summary>
-        /// <param name="filedata">Tableau d'octets du fichier ou de l'instance.</param>
-        /// <returns>Tableau de données contenant toute les valeurs du fichier.</returns>
-        static Data[] TranslateDataFile(byte[] FileData, bool verifySignature)
+        /// <param name="filedata">Array of bytes of the file or the instance.</param>
+        /// <returns>Data array containing all the values of the file or the instance.</returns>
+        /// <exception cref="NBIIOExeption"></exception>
+        public static Data[] TranslateDataFile(byte[] FileData, bool verifySignature)
         {
-            int CurretByte = 0; // La position de la bande passante.
-            Data[] _Data = new Data[] { }; // Notre Data qui nous sert de buffer
-            byte[] ByteBuffer = new byte[] { }; // Notre buffer a octect pour extraire les valeurs.
+            int CurretByte = 0; // The position of the band.
+            List<Data> _Data = new List<Data>(); // The Data List as a buffer
+            byte[] ByteBuffer = new byte[] { }; // The buffer has octect to extracts the values.
             if (verifySignature)
             {
                 CurretByte++;
@@ -72,25 +77,78 @@ namespace TSDFF.IO
                 for (; CurretByte < FileData.Length; CurretByte++)
                 {
                     ByteBuffer[ByteBuffer.Length + 1] = FileData[CurretByte];
-                    if (FileData[CurretByte] == Data.Separator) // Si notre octet est un separateur.
+                    if (FileData[CurretByte] == Data.Separator) // If the byte is a separator.
                     {
-                        _Data[_Data.Length + 1] = Data.Translate(ByteBuffer); // On défini la nouvelle Data.
-                        ByteBuffer = new byte[] { }; // On créer un nouveau ByteBuffer.
+                        _Data.Add(Data.Translate(ByteBuffer)); // We defined the new Data.
+                        ByteBuffer = new byte[] { }; // Create a new ByteBuffer.
                     }
                 }
             }
             else
             {
-                throw new InvalidDataException("Invalid file signature. (fr: Signature de fichier invalide.)");
+                throw new NBIIOExeption("[ERROR] Failed to import the file (Invalid file signature). Have you forgot to disable verifySignature ?");
             }
-            return _Data;
+            return _Data.ToArray();
         }
-    }
-    public enum FileExt
-    {
-        DataFile,
-        RawFile,
-        Chunk,
-        ChunkRoot
+        /// <summary>
+        /// Used for Export Datas to a file.
+        /// </summary>
+        /// <param name="path">The output file path.</param>
+        /// <param name="Datas">The Datas.</param>
+        public static void ExportFile(string path, Data[] Datas)
+        {
+            List<byte> DataBuffer = new List<byte>();
+            FileStream writer = new FileStream(path, FileMode.Create);
+
+            try
+            {
+                for (int i = 0; i < Datas.Length; i++)
+                {
+                    byte[] TempBuffer = Data.BuildData(Datas[i]);
+                    for (int i2 = 0; i2 < TempBuffer.Length; i2++)
+                    {
+                        DataBuffer.Add(TempBuffer[i2]);
+                    }
+                    DataBuffer.Add(Data.Separator);
+                }
+                // Starting writing file.
+                writer.WriteByte(Signature); // Write the signature at the 1st byte.
+                for (int i = 0; i < DataBuffer.Count; i++)
+                {
+                    writer.WriteByte(DataBuffer[i]); // Then write the file.
+                }
+                writer.Dispose(); writer.Close();
+            }
+
+            catch (Exception e)
+            {
+                throw new NBIIOExeption("[FATAL] Failled to Export a file + (" + e.Message + ", " + e.Data + ")");
+
+            }
+        }
+        /// <summary>
+        /// This exception has is thrown when an I/O error occurs.
+        /// </summary>
+        [Serializable]
+        public class NBIIOExeption : Exception
+        {
+            public NBIIOExeption() { }
+            public NBIIOExeption(string message) : base(message) { }
+            public NBIIOExeption(string message, Exception inner) : base(message, inner) { }
+            protected NBIIOExeption(
+              System.Runtime.Serialization.SerializationInfo info,
+              System.Runtime.Serialization.StreamingContext context)
+                : base(info, context) { }
+        }
+        /// <summary>
+        /// Possibles extentions.
+        /// </summary>
+        public enum FileExt
+        {
+            DataFile,
+            RawFile,
+            Chunk,
+            ChunkRoot
+        }
     }
 }
