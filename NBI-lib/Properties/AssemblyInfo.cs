@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NBIlib")]
-[assembly: AssemblyCopyright("Creative Commons BY-SA 4 Fr 2015")]
+[assembly: AssemblyCopyright("Creative Commons BY 4 Fr 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
