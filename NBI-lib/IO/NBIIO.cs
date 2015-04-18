@@ -22,7 +22,7 @@ namespace TSDFF.IO
             FileInfo info = new FileInfo(path);
             FileExt Ext;
 
-            switch (info.Extension) // Check and set the extention of the file.
+         /*   switch (info.Extension) // Check and set the extention of the file.
             {
                 case "nbi":
                     Ext = FileExt.DataFile;
@@ -38,7 +38,8 @@ namespace TSDFF.IO
                     break;
                 default:
                     throw new InvalidOperationException("[ERROR] Invalid format.");
-            }
+            }*/
+            Ext = FileExt.DataFile;
             switch (Ext)
             {
                 case FileExt.DataFile:
@@ -52,11 +53,7 @@ namespace TSDFF.IO
                 default:
                     throw new InvalidOperationException("[FATAL] Invalid or null format forcing.");
             }
-
-
         }
-
-
         /// <summary>
         /// To translate a file of data into a data table.
         /// </summary>
@@ -67,7 +64,7 @@ namespace TSDFF.IO
         {
             int CurretByte = 0; // The position of the band.
             List<Data> _Data = new List<Data>(); // The Data List as a buffer
-            byte[] ByteBuffer = new byte[] { }; // The buffer has octect to extracts the values.
+            List<byte> ByteBuffer = new List<byte>(); // The buffer has octect to extracts the values.
             if (verifySignature)
             {
                 CurretByte++;
@@ -76,11 +73,11 @@ namespace TSDFF.IO
             {
                 for (; CurretByte < FileData.Length; CurretByte++)
                 {
-                    ByteBuffer[ByteBuffer.Length + 1] = FileData[CurretByte];
+                    ByteBuffer.Add(FileData[CurretByte]);
                     if (FileData[CurretByte] == Data.Separator) // If the byte is a separator.
                     {
-                        _Data.Add(Data.Translate(ByteBuffer)); // We defined the new Data.
-                        ByteBuffer = new byte[] { }; // Create a new ByteBuffer.
+                        _Data.Add(Data.Translate(ByteBuffer.ToArray())); // We defined the new Data.
+                        ByteBuffer.Clear(); // Create a new ByteBuffer.
                     }
                 }
             }
